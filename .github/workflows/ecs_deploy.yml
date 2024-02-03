@@ -32,8 +32,19 @@ jobs:
       run: |
         docker build -t 022608205880.dkr.ecr.us-east-1.amazonaws.com/quiz-application-abhishek:$IMAGE_TAG .
         docker push 022608205880.dkr.ecr.us-east-1.amazonaws.com/quiz-application-abhishek:$IMAGE_TAG
+        echo "::set-output name=image::022608205880.dkr.ecr.us-east-1.amazonaws.com/quiz-application-abhishek:$IMAGE_TAG"
+
+      - name: Fill in the new image ID in the task definition
+        id: task-def
+        run: |
+          TASK_DEF=$(sed -e "s|IMAGE_NAME|022608205880.dkr.ecr.us-east-1.amazonaws.com/quiz-application-abhishek:$IMAGE_TAG|g" ecs-task-def.json)
+          echo "::set-output name=task_definition::quiz-application-abhishek"
+
+    - name: Register new task definition
+      run: |
+        aws ecs register-task-definition --cli-input-json "quiz-application-abhishek"
 
     - name: Deploy to Amazon ECS
       run: |
-        aws ecs update-service --cluster abhishek-devops-task-1 --service quiz-application-abhishek --force-new-deployment
+        aws ecs update-service --cluster abhishek-devops-task-1 --service quiz-application-abhishek --task-definition $(jq -r .taskDefinition.taskDefinitionArn <<< "quiz-application-abhishek")
 
