@@ -40,9 +40,14 @@ jobs:
         TASK_DEF=$(sed -e "s|IMAGE_NAME|022608205880.dkr.ecr.us-east-1.amazonaws.com/quiz-application-abhishek:$IMAGE_TAG|g" ecs-task-def.json)
         echo "::set-output name=task_definition::$TASK_DEF"
 
+    # - name: Register new task definition
+    #   run: |
+    #     aws ecs register-task-definition --cli-input-json "$TASK_DEF"
     - name: Register new task definition
       run: |
-        aws ecs register-task-definition --cli-input-json "$TASK_DEF"
+        TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://ecs-task-def.json | jq -r '.taskDefinition.taskDefinitionArn')
+        echo "New task definition ARN: $TASK_DEF_ARN"
+        echo "::set-output name=task_def_arn::$TASK_DEF_ARN"
 
     - name: Deploy to Amazon ECS
       run: |
