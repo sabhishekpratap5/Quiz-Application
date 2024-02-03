@@ -46,7 +46,7 @@ jobs:
     - name: Register new task definition
       id: register-task-def
       run: |
-        TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://modified-task-def.json | jq -r '.taskDefinition.taskDefinitionArn')
+        TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://ecs-task-def.json | jq -r '.taskDefinition.taskDefinitionArn')
         echo "::set-output name=task_def_arn::$TASK_DEF_ARN"
 
 
