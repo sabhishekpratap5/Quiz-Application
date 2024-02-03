@@ -44,10 +44,11 @@ jobs:
     #   run: |
     #     aws ecs register-task-definition --cli-input-json "$TASK_DEF"
     - name: Register new task definition
+      id: register-task-def
       run: |
-        TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://ecs-task-def.json | jq -r '.taskDefinition.taskDefinitionArn')
-        echo "New task definition ARN: $TASK_DEF_ARN"
+        TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://modified-task-def.json | jq -r '.taskDefinition.taskDefinitionArn')
         echo "::set-output name=task_def_arn::$TASK_DEF_ARN"
+
 
     - name: Deploy to Amazon ECS
       run: |
